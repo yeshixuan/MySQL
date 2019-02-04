@@ -19,6 +19,34 @@ class MysqlDemo(object):
         self.conn = pymysql.connect(host,username,password,dbname,charset='utf8')
         self.cursor = self.conn.cursor()
 
+    #创建表
+    def create_tab(self, table_name, datas):
+        if type(datas) not in [tuple,list]:
+            print('请以元组或列表的形式传入数据')
+            return False
+        if len(datas) == 0:
+            print('数据不能为空')
+            return False
+        sql_str = ''
+        i = 1
+        for data in datas:
+            if i != len(datas):
+                sql_str += '{} {}({}) {},'.format(data[0],data[1],data[2],data[3])
+            else:
+                sql_str += '{} {}({}) {}'.format(data[0], data[1], data[2], data[3])
+            i += 1
+        sql = 'create table {}({})'.format(table_name, sql_str)
+        try:
+            self.cursor.execute(sql)
+            self.cursor.close()
+            self.conn.close()
+            return table_name
+        except Exception as e:
+            self.conn.rollback()
+            print(e)
+            return False
+
+
     #获取所有数据 次数传值为sql语句
     def get_all(self, sql):
         try:
@@ -29,7 +57,7 @@ class MysqlDemo(object):
             print(e)
             return False
 
-    #获取单挑数据
+    #获取单条数据
     def get_one(self, sql):
         try:
             self.cursor.execute(sql)
