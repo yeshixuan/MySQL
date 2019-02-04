@@ -38,8 +38,7 @@ class MysqlDemo(object):
         sql = 'create table {}({})'.format(table_name, sql_str)
         try:
             self.cursor.execute(sql)
-            self.cursor.close()
-            self.conn.close()
+            self.conn.commit()
             return table_name
         except Exception as e:
             self.conn.rollback()
